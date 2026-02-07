@@ -1,146 +1,651 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Verificación</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Security Review</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f3f5f7;font-family:system-ui,Arial}
-    .card{background:#fff;width:min(520px,92vw);padding:26px;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.12);text-align:center}
-    h1{margin:0 0 8px;font-size:22px}
-    p{margin:8px 0;color:#555;line-height:1.5}
-    button{margin-top:16px;padding:12px 18px;border:0;border-radius:10px;background:#2b6cb0;color:#fff;font-size:16px;cursor:pointer}
-    .small{font-size:13px;color:#777;margin-top:10px}
+    :root{
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted:#475569;
+      --muted2:#64748b;
+      --border:#e2e8f0;
+      --shadow: 0 18px 50px rgba(2, 6, 23, .10);
+      --blue:#2563eb;
+      --blue2:#1d4ed8;
+      --green:#16a34a;
+      --amber:#d97706;
+      --red:#dc2626;
+      --chip:#eef2ff;
+      --chipText:#1e40af;
+      --focus: 0 0 0 3px rgba(37, 99, 235, .25);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
 
-    /* Overlay de “mega susto” */
-    .overlay{
-      position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-      background: radial-gradient(circle at 30% 20%, #ff3b3b, #0a0a0a 60%);
-      z-index:999;color:#fff;overflow:hidden;
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1220;
+        --card:#0f172a;
+        --text:#e5e7eb;
+        --muted:#cbd5e1;
+        --muted2:#94a3b8;
+        --border:#243244;
+        --shadow: 0 22px 60px rgba(0,0,0,.35);
+        --chip:#111b34;
+        --chipText:#93c5fd;
+        --focus: 0 0 0 3px rgba(147, 197, 253, .25);
+      }
     }
-    .shake{animation:shake .08s infinite}
-    @keyframes shake{
-      0%{transform:translate(0,0)}25%{transform:translate(2px,-2px)}50%{transform:translate(-2px,2px)}75%{transform:translate(2px,2px)}100%{transform:translate(-2px,-2px)}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1100px 700px at 10% 10%, rgba(37,99,235,.10), transparent 55%),
+                  radial-gradient(900px 600px at 90% 10%, rgba(22,163,74,.10), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px;
     }
+
+    .shell{
+      width: min(860px, 100%);
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px){
+      .shell{ grid-template-columns: 1fr; }
+    }
+
     .panel{
-      width:min(820px,94vw);
-      background:rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:18px;
-      padding:20px 18px;
-      box-shadow:0 30px 90px rgba(0,0,0,.6);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-weight:800;letter-spacing:.6px}
-    .title{font-size:34px;font-weight:900;margin:10px 0 8px}
-    .sub{color:rgba(255,255,255,.85);line-height:1.5}
-    .bar{height:10px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:14px 0}
-    .bar > div{height:100%;width:0;background:#00e676;border-radius:999px;transition:width .2s}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .box{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
-    .k{font-size:12px;color:rgba(255,255,255,.7)}
-    .v{font-size:14px;margin-top:6px;word-break:break-word}
-    .btnrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
-    .btn2{background:#00c853;color:#05210e}
-    .btn3{background:rgba(255,255,255,.14);color:#fff}
-    .btnS{padding:10px 14px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
-    @media (max-width:560px){.grid{grid-template-columns:1fr}.title{font-size:28px}}
+
+    .header{
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .logo{
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(255,255,255,.9), transparent 55%),
+        linear-gradient(135deg, var(--blue), var(--blue2));
+      box-shadow: 0 12px 26px rgba(37,99,235,.25);
+      flex: 0 0 auto;
+    }
+
+    .brand h1{
+      font-size: 14px;
+      margin:0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand .sub{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chip{
+      background: var(--chip);
+      color: var(--chipText);
+      border: 1px solid rgba(37,99,235,.18);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      flex: 0 0 auto;
+    }
+
+    .content{
+      padding: 22px;
+    }
+
+    .title{
+      font-size: 22px;
+      margin: 0 0 8px 0;
+      letter-spacing: .2px;
+    }
+    .lead{
+      margin: 0 0 16px 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14.5px;
+    }
+
+    .divider{
+      height:1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    .row{
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(37,99,235,.25);
+      background: linear-gradient(180deg, rgba(37,99,235,.95), rgba(29,78,216,.95));
+      color: white;
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: .2px;
+      box-shadow: 0 14px 28px rgba(37,99,235,.18);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: translateY(1px); }
+    .btn:focus{ outline:none; box-shadow: var(--focus); }
+
+    .btn-ghost{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+    .meta{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted2);
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .dot{
+      width: 6px; height: 6px; border-radius: 99px; background: var(--green);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.16);
+    }
+
+    .progressWrap{
+      background: rgba(148,163,184,.18);
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: 999px;
+      height: 10px;
+      overflow:hidden;
+      margin-top: 12px;
+    }
+    .progressBar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(37,99,235,.95), rgba(22,163,74,.95));
+      border-radius: 999px;
+      transition: width .35s ease;
+    }
+
+    .checklist{
+      margin-top: 14px;
+      display:grid;
+      gap: 10px;
+    }
+    .item{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(148,163,184,.08);
+      align-items:flex-start;
+    }
+    .icon{
+      width: 18px; height: 18px; border-radius: 6px;
+      display:grid; place-items:center;
+      border: 1px solid rgba(148,163,184,.35);
+      font-size: 12px;
+      flex: 0 0 auto;
+      margin-top: 2px;
+      color: var(--muted2);
+    }
+    .ok .icon{ border-color: rgba(22,163,74,.35); color: var(--green); }
+    .warn .icon{ border-color: rgba(217,119,6,.35); color: var(--amber); }
+    .bad .icon{ border-color: rgba(220,38,38,.35); color: var(--red); }
+
+    .item .t{
+      font-weight: 800;
+      font-size: 13px;
+      margin: 0;
+    }
+    .item .d{
+      margin: 3px 0 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Side panel */
+    .side{
+      padding: 18px 18px 8px 18px;
+    }
+    .side h2{
+      font-size: 13px;
+      margin:0 0 10px 0;
+      color: var(--muted2);
+      letter-spacing:.2px;
+      text-transform: uppercase;
+    }
+    .sideCard{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(148,163,184,.06);
+      margin-bottom: 12px;
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px 10px;
+      font-size: 13px;
+    }
+    .k{ color: var(--muted2); }
+    .v{ color: var(--text); word-break: break-word; }
+    .hint{
+      margin: 10px 0 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    details{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: rgba(148,163,184,.06);
+    }
+    summary{
+      cursor:pointer;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--text);
+      list-style:none;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .tips{
+      margin: 10px 0 0 0;
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer{
+      padding: 14px 22px;
+      border-top: 1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted2);
+      font-size: 12px;
+    }
+
+    .link{
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .link:hover{ text-decoration: underline; }
+
+    .badgeEdu{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(22,163,74,.10);
+      border: 1px solid rgba(22,163,74,.18);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badgeEdu .miniDot{
+      width:8px;height:8px;border-radius:99px;background:var(--green);
+      box-shadow:0 0 0 3px rgba(22,163,74,.14);
+    }
+
+    .fadeIn{
+      animation: fade .28s ease;
+    }
+    @keyframes fade{
+      from{ opacity:0; transform: translateY(6px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h1>Actualización requerida</h1>
-  <p>Confirmá una verificación rápida para continuar.</p>
-  <button id="go">Continuar</button>
-  <div class="small">Toma menos de 5 segundos</div>
-</div>
+  <div class="shell">
+    <!-- Main panel -->
+    <div class="panel" id="mainPanel">
+      <div class="header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div style="min-width:0">
+            <h1>Secure Services</h1>
+            <div class="sub">Session Integrity & Risk Review</div>
+          </div>
+        </div>
+        <div class="chip">SECURITY REVIEW</div>
+      </div>
 
-<div class="overlay" id="ov">
-  <div class="panel" id="panel">
-    <span class="tag">ALERTA</span>
-    <div class="title">Verificación en curso…</div>
-    <div class="sub" id="msg">
-      No cierres esta pantalla.
+      <div class="content" id="main">
+        <h2 class="title">Revisión de seguridad</h2>
+        <p class="lead">
+          Estamos validando la integridad de su sesión para mantener el acceso seguro a este servicio.
+          Este proceso no requiere credenciales y toma solo unos segundos.
+        </p>
+
+        <div class="row">
+          <button class="btn" id="start">Continuar</button>
+          <div class="meta">
+            <span class="dot" aria-hidden="true"></span>
+            <span>Servicio operativo</span>
+            <span>•</span>
+            <span id="ref">REF: --</span>
+          </div>
+        </div>
+
+        <div class="progressWrap" aria-label="Progreso" style="display:none" id="pwrap">
+          <div class="progressBar" id="pbar"></div>
+        </div>
+
+        <div class="checklist" id="checks" style="display:none"></div>
+
+        <div class="divider"></div>
+
+        <div class="badgeEdu" id="eduBadge" style="display:none">
+          <span class="miniDot" aria-hidden="true"></span>
+          Simulación educativa, sin recolección de datos personales
+        </div>
+
+        <div class="row" style="margin-top:12px; display:none" id="actions">
+          <button class="btn btn-ghost" id="back">Volver</button>
+          <a class="link" href="#" id="learnMore">Ver recomendaciones</a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>© Secure Services</span>
+        <span>Política de seguridad • Estado del servicio</span>
+      </div>
     </div>
-    <div class="bar"><div id="fill"></div></div>
 
-    <div class="grid" id="info"></div>
+    <!-- Side panel -->
+    <div class="panel">
+      <div class="header">
+        <div class="brand">
+          <div style="min-width:0">
+            <h1>Detalles</h1>
+            <div class="sub">Información no sensible del entorno</div>
+          </div>
+        </div>
+        <div class="chip">INFO</div>
+      </div>
 
-    <div class="btnrow">
-      <button class="btnS btn3" id="learn">¿Qué pasó?</button>
-      <button class="btnS btn2" id="ok">Ok, entendí</button>
+      <div class="side">
+        <div class="sideCard">
+          <div class="kv" id="kv">
+            <div class="k">Hora local</div><div class="v" id="tLocal">—</div>
+            <div class="k">Idioma</div><div class="v" id="lang">—</div>
+            <div class="k">Plataforma</div><div class="v" id="plat">—</div>
+            <div class="k">Pantalla</div><div class="v" id="scr">—</div>
+            <div class="k">Estado</div><div class="v" id="onl">—</div>
+          </div>
+          <p class="hint">
+            Nota: esta información es genérica (no identifica a una persona). Se muestra únicamente con fines educativos.
+          </p>
+        </div>
+
+        <details>
+          <summary>Buenas prácticas para no caer en enlaces falsos</summary>
+          <ul class="tips">
+            <li>Verificá el dominio completo antes de abrir enlaces.</li>
+            <li>Desconfiá de mensajes con urgencia o presión emocional.</li>
+            <li>Confirmá por otro canal (llamada, mensaje directo) si algo “no cuadra”.</li>
+            <li>Usá MFA y administradores de contraseñas cuando sea posible.</li>
+          </ul>
+        </details>
+
+        <div class="sideCard" style="margin-top:12px">
+          <div style="font-weight:900; font-size:13px;">Autor</div>
+          <div style="color:var(--muted); font-size:13px; margin-top:6px; line-height:1.5">
+            Yedelmark Lewis (Chokz)<br/>
+            Estudiante de Ingeniería en Ciberseguridad<br/>
+            Proyecto educativo de concientización
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<audio id="beep">
-  <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-</audio>
 
 <script>
-  const ov = document.getElementById("ov");
-  const panel = document.getElementById("panel");
-  const fill = document.getElementById("fill");
-  const msg = document.getElementById("msg");
-  const info = document.getElementById("info");
-  const beep = document.getElementById("beep");
+  // --- UI helpers ---
+  const main = document.getElementById("main");
+  const start = document.getElementById("start");
+  const back = document.getElementById("back");
+  const pwrap = document.getElementById("pwrap");
+  const pbar = document.getElementById("pbar");
+  const checks = document.getElementById("checks");
+  const eduBadge = document.getElementById("eduBadge");
+  const actions = document.getElementById("actions");
+  const ref = document.getElementById("ref");
+  const learnMore = document.getElementById("learnMore");
 
-  function addBox(k,v){
-    const d=document.createElement("div");
-    d.className="box";
-    d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
-    info.appendChild(d);
+  // Side info
+  document.getElementById("tLocal").textContent = new Date().toString();
+  document.getElementById("lang").textContent = navigator.language || "N/A";
+  document.getElementById("plat").textContent = navigator.platform || "N/A";
+  document.getElementById("scr").textContent = `${screen.width} × ${screen.height}`;
+  document.getElementById("onl").textContent = navigator.onLine ? "En línea" : "Sin conexión";
+
+  // Reference code
+  const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+  ref.textContent = `REF: ${code}`;
+
+  const checklist = [
+    { key: "Validación de integridad", desc: "Revisando parámetros de sesión y consistencia del navegador.", status: "ok" },
+    { key: "Revisión de riesgos", desc: "Evaluando señales comunes de ingeniería social en la interacción.", status: "warn" },
+    { key: "Trazabilidad del acceso", desc: "Confirmando que no se solicitó ninguna credencial.", status: "ok" },
+  ];
+
+  function iconFor(status){
+    if(status === "ok") return "✓";
+    if(status === "warn") return "!";
+    return "×";
   }
 
-  async function goFull(){
+  function renderChecks(step){
+    checks.innerHTML = "";
+    checklist.forEach((c, idx) => {
+      const s = (idx < step) ? (c.status) : "";
+      const cls = s ? s : "";
+      const stateText = idx < step ? (s === "ok" ? "Completado" : "Atención") : "Pendiente";
+      const el = document.createElement("div");
+      el.className = `item ${cls}`;
+      el.innerHTML = `
+        <div class="icon">${idx < step ? iconFor(s) : "•"}</div>
+        <div>
+          <p class="t">${c.key} <span style="color:var(--muted2); font-weight:700; font-size:12px;">(${stateText})</span></p>
+          <p class="d">${c.desc}</p>
+        </div>
+      `;
+      checks.appendChild(el);
+    });
+  }
+
+  function setProgress(p){
+    pbar.style.width = `${p}%`;
+  }
+
+  function showStartState(){
+    // reset
+    pwrap.style.display = "none";
+    checks.style.display = "none";
+    eduBadge.style.display = "none";
+    actions.style.display = "none";
+    setProgress(0);
+
+    main.classList.add("fadeIn");
+    main.innerHTML = `
+      <h2 class="title">Revisión de seguridad</h2>
+      <p class="lead">
+        Estamos validando la integridad de su sesión para mantener el acceso seguro a este servicio.
+        Este proceso no requiere credenciales y toma solo unos segundos.
+      </p>
+
+      <div class="row">
+        <button class="btn" id="start">Continuar</button>
+        <div class="meta">
+          <span class="dot" aria-hidden="true"></span>
+          <span>Servicio operativo</span>
+          <span>•</span>
+          <span>${ref.textContent}</span>
+        </div>
+      </div>
+
+      <div class="progressWrap" aria-label="Progreso" style="display:none" id="pwrap">
+        <div class="progressBar" id="pbar"></div>
+      </div>
+
+      <div class="checklist" id="checks" style="display:none"></div>
+
+      <div class="divider"></div>
+
+      <div class="badgeEdu" id="eduBadge" style="display:none">
+        <span class="miniDot" aria-hidden="true"></span>
+        Simulación educativa, sin recolección de datos personales
+      </div>
+
+      <div class="row" style="margin-top:12px; display:none" id="actions">
+        <button class="btn btn-ghost" id="back">Volver</button>
+        <a class="link" href="#" id="learnMore">Ver recomendaciones</a>
+      </div>
+    `;
+
+    // rebind
+    document.getElementById("start").addEventListener("click", runFlow);
+  }
+
+  function showResult(){
+    // Corporate educational reveal (serio)
+    main.innerHTML = `
+      <div class="chip" style="display:inline-block;margin-bottom:10px;">SIMULACIÓN EDUCATIVA</div>
+      <h2 class="title">Concientización en ciberseguridad</h2>
+      <p class="lead">
+        Si usted llegó hasta aquí, es porque este flujo <strong>parecía legítimo</strong>. Ese es exactamente el punto.
+        En escenarios reales, este tipo de apariencia puede ser usada en ataques de ingeniería social.
+      </p>
+      <div class="divider"></div>
+      <p class="lead" style="margin-bottom:10px;">
+        <strong>Importante:</strong> esta demostración no solicita credenciales, no instala nada y no almacena información personal.
+        Muestra únicamente datos genéricos que un sitio web puede detectar de forma estándar (idioma, hora local, plataforma, pantalla).
+      </p>
+
+      <div class="row" style="margin-top:14px;">
+        <button class="btn" id="seeTips">Ver recomendaciones</button>
+        <a class="link" href="#" id="restart">Reiniciar</a>
+      </div>
+
+      <p style="margin-top:14px;color:var(--muted2);font-size:12.5px;line-height:1.55">
+        Proyecto educativo de concientización • Yedelmark Lewis (Chokz)
+      </p>
+    `;
+
+    document.getElementById("seeTips").addEventListener("click", () => {
+      // scroll to side tips (mobile friendly: open details)
+      const details = document.querySelector("details");
+      details.open = true;
+      details.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    document.getElementById("restart").addEventListener("click", (e) => {
+      e.preventDefault();
+      showStartState();
+    });
+  }
+
+  async function runFlow(){
+    // Show progress UI
+    pwrap.style.display = "block";
+    checks.style.display = "grid";
+    eduBadge.style.display = "none";
+    actions.style.display = "none";
+
+    renderChecks(0);
+    setProgress(6);
+
+    // Step timing: realistic + smooth
+    const steps = [
+      { p: 28, s: 1, delay: 650 },
+      { p: 58, s: 2, delay: 700 },
+      { p: 92, s: 3, delay: 700 },
+      { p: 100, s: 3, delay: 520 },
+    ];
+
+    // Optional fullscreen request (doesn't break if blocked)
     try{ await document.documentElement.requestFullscreen(); }catch(e){}
+
+    for (const st of steps){
+      await new Promise(r => setTimeout(r, st.delay));
+      setProgress(st.p);
+      renderChecks(st.s);
+    }
+
+    // Reveal educational badge + actions
+    eduBadge.style.display = "inline-flex";
+    actions.style.display = "flex";
+
+    // Replace main content with final screen
+    showResult();
   }
 
-  document.getElementById("go").addEventListener("click", async () => {
-    // “Impacto” sin daño: vibración + fullscreen + overlay + shake
-    if(navigator.vibrate) navigator.vibrate([120,80,120,80,180]);
-    try{ beep.play(); }catch(e){}
-    await goFull();
-
-    ov.style.display="flex";
-    panel.classList.add("shake");
-
-    // Simulación de “escaneo”
-    let p=0;
-    const t=setInterval(()=>{
-      p+=10;
-      fill.style.width = p+"%";
-      if(p===30) msg.textContent="Validando sesión…";
-      if(p===60) msg.textContent="Revisando actividad…";
-      if(p===90) msg.textContent="Listo.";
-      if(p>=100){
-        clearInterval(t);
-        panel.classList.remove("shake");
-        msg.innerHTML = `<strong>Tranqui 😅</strong> Esto fue una simulación educativa.`;
-        info.innerHTML="";
-        addBox("Lo que una web puede ver", "Navegador, idioma, hora, tamaño de pantalla (sin permisos).");
-        addBox("Navegador", navigator.userAgent);
-        addBox("Idioma", navigator.language || "N/A");
-        addBox("Hora local", new Date().toString());
-        addBox("Pantalla", `${screen.width} x ${screen.height}`);
-        addBox("Online", navigator.onLine ? "Sí" : "No");
-        addBox("Mensaje clave", "Si un enlace te mete presión o urgencia, verificá antes de tocar.");
-      }
-    }, 180);
-  });
-
-  document.getElementById("ok").addEventListener("click", async () => {
-    ov.style.display="none";
-    try{ if(document.fullscreenElement) await document.exitFullscreen(); }catch(e){}
-  });
-
-  document.getElementById("learn").addEventListener("click", () => {
-    info.innerHTML="";
-    addBox("1) Verificá el enlace", "Dominio real, sin letras raras ni acortadores.");
-    addBox("2) No caigás en urgencia", "“Último aviso” casi siempre es manipulación.");
-    addBox("3) Confirmá por otro canal", "Llamada o mensaje directo antes de abrir.");
-    addBox("4) Activá MFA", "Un segundo factor salva cuentas.");
-  });
+  // Back & learn handlers (start screen binds new elements, so handled in showStartState)
+  showStartState();
 </script>
 
 </body>
