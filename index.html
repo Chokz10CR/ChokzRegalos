@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Verificación</title>
+  <style>
+    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6f8;font-family:system-ui,Arial}
+    .card{background:#fff;width:min(560px,92vw);padding:28px;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.12);text-align:center}
+    h1{margin:0 0 10px;font-size:22px}
+    p{color:#555;line-height:1.5}
+    button{margin-top:16px;padding:12px 18px;border:0;border-radius:10px;background:#2b6cb0;color:#fff;font-size:16px;cursor:pointer}
+    .overlay{
+      position:fixed;inset:0;background:#070a10;display:none;align-items:center;justify-content:center;z-index:99;color:#fff;
+    }
+    .alert{
+      width:min(720px,94vw);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:22px;background:rgba(255,255,255,.06);
+      box-shadow:0 24px 70px rgba(0,0,0,.5);
+      text-align:left;
+    }
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,71,87,.18);color:#ff4757;font-weight:700;font-size:12px;margin-bottom:10px}
+    .big{font-size:28px;margin:6px 0 10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .box{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+    .k{font-size:12px;color:rgba(255,255,255,.7)}
+    .v{font-size:14px;margin-top:4px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .btn2{background:#ff4757}
+    .btn3{background:#2f855a}
+    .small{color:rgba(255,255,255,.75);font-size:13px;margin-top:12px;line-height:1.5}
+    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <h1>Actualización requerida</h1>
+  <p>Para continuar, confirme la revisión rápida de seguridad.</p>
+  <button id="go">Continuar</button>
+  <p style="font-size:13px;color:#777;margin-top:10px">Toma menos de 5 segundos</p>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="alert">
+    <div class="tag">SIMULACIÓN EDUCATIVA</div>
+    <div class="big">No hagás clic sin verificar ⚠️</div>
+    <div style="color:rgba(255,255,255,.85);line-height:1.5">
+      Esto parece un “susto”, pero es una demostración de concientización.
+      Una web puede ver ciertos <strong>datos básicos del dispositivo</strong> (sin robar nada),
+      y un atacante puede usar eso para manipularte.
+    </div>
+
+    <div class="grid" id="info"></div>
+
+    <div class="small">
+      Importante: <strong>no se recolecta ni se guarda información personal</strong>.  
+      Esto solo muestra lo que cualquier página podría detectar (navegador, idioma, hora, etc.).
+    </div>
+
+    <div class="row">
+      <button class="btn3" id="learn">Ver cómo evitar esto ✅</button>
+      <button class="btn2" id="exit">Salir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById("overlay");
+  const info = document.getElementById("info");
+
+  function addBox(k,v){
+    const d = document.createElement("div");
+    d.className="box";
+    d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
+    info.appendChild(d);
+  }
+
+  document.getElementById("go").addEventListener("click", async () => {
+    // vibración suave si el dispositivo lo soporta
+    if (navigator.vibrate) navigator.vibrate([120, 80, 120]);
+
+    // intento de pantalla completa (el usuario puede salir con gesto)
+    try { await document.documentElement.requestFullscreen(); } catch(e){}
+
+    // mostrar overlay
+    overlay.style.display="flex";
+
+    // info "segura" que una web puede ver sin permisos
+    info.innerHTML="";
+    addBox("Navegador", navigator.userAgent);
+    addBox("Idioma", navigator.language || "N/A");
+    addBox("Hora local", new Date().toString());
+    addBox("Tamaño pantalla", `${screen.width} x ${screen.height}`);
+    addBox("Plataforma", navigator.platform || "N/A");
+    addBox("Online", navigator.onLine ? "Sí" : "No");
+  });
+
+  document.getElementById("exit").addEventListener("click", async () => {
+    overlay.style.display="none";
+    try { if (document.fullscreenElement) await document.exitFullscreen(); } catch(e){}
+  });
+
+  document.getElementById("learn").addEventListener("click", () => {
+    info.innerHTML="";
+    addBox("1) Verificá el enlace", "Dominio correcto, sin letras raras, sin acortadores sospechosos.");
+    addBox("2) No te dejés llevar por urgencia", "Mensajes tipo “último aviso” buscan que actués sin pensar.");
+    addBox("3) Revisá el remitente", "No solo el nombre. Mirá el correo o el perfil real.");
+    addBox("4) Activá MFA", "Aunque roben la contraseña, el segundo factor frena el acceso.");
+    addBox("5) Si dudás, confirmá por otro canal", "Llamada o mensaje directo antes de abrir enlaces.");
+  });
+</script>
+
+</body>
+</html>
