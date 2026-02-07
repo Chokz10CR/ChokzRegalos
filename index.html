@@ -1,230 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Portal de Seguridad</title>
-<style>
-  :root{
-    --bg:#0b1220; --card:#0f172a; --text:#e5e7eb; --muted:#94a3b8; --border:#223146;
-    --brand:#2563eb; --danger:#dc2626; --warn:#f59e0b;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:22px;
-    background:
-      radial-gradient(900px 600px at 20% 0%, rgba(37,99,235,.18), transparent 60%),
-      radial-gradient(900px 600px at 90% 10%, rgba(220,38,38,.12), transparent 60%),
-      var(--bg);
-    font-family:system-ui,"Segoe UI",Arial,sans-serif; color:var(--text);
-  }
-  .card{
-    width:min(900px,96vw); background:var(--card); border:1px solid var(--border);
-    border-radius:18px; box-shadow:0 30px 90px rgba(0,0,0,.45); overflow:hidden;
-  }
-  .top{padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:12px}
-  .brand{display:flex; gap:12px; align-items:center}
-  .logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#1d4ed8)}
-  .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(37,99,235,.25);background:rgba(37,99,235,.12);font-weight:900;font-size:12px}
-  .c{padding:20px}
-  h1{margin:0 0 8px 0;font-size:22px}
-  p{margin:8px 0;color:var(--muted);line-height:1.6}
-  .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:14px}
-  .btn{border:0;border-radius:12px;padding:11px 13px;cursor:pointer;font-weight:900}
-  .go{background:linear-gradient(180deg,#2563eb,#1d4ed8);color:#fff}
-  .ghost{background:transparent;border:1px solid var(--border);color:#fff}
-
-  /* Overlay tipo “lockdown visual” */
-  .overlay{
-    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    background:rgba(2,6,23,.86); z-index:9000; padding:18px;
-  }
-  .panel{
-    width:min(920px,96vw); background:var(--card); border:1px solid var(--border);
-    border-radius:18px; box-shadow:0 30px 90px rgba(0,0,0,.55); overflow:hidden; position:relative;
-  }
-  .panelTop{
-    padding:16px 18px; border-bottom:1px solid var(--border);
-    background:linear-gradient(180deg, rgba(220,38,38,.20), transparent);
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-  }
-  .sev{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:12px;color:#fecaca}
-  .dot{width:8px;height:8px;border-radius:99px;background:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,.18)}
-  .x{
-    width:34px;height:34px;border-radius:10px;border:1px solid var(--border);
-    background:transparent;color:#fff;font-weight:900;cursor:pointer; opacity:.85;
-  }
-  .panelBody{padding:18px}
-  .big{font-size:26px;font-weight:900;margin:6px 0}
-  .small{color:var(--muted);font-size:13px;line-height:1.55}
-  .bar{height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.18);margin:12px 0}
-  .fill{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#f59e0b,#dc2626);transition:width .18s}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  @media(max-width:680px){.grid{grid-template-columns:1fr}}
-  .box{border:1px solid var(--border);border-radius:14px;padding:12px;background:rgba(148,163,184,.06)}
-  .k{font-size:12px;color:var(--muted)}
-  .v{margin-top:6px;font-size:13.5px;word-break:break-word}
-
-  /* “Ventanas emergentes” internas (toasts), no popups del navegador */
-  .toasts{position:fixed; right:14px; bottom:14px; display:grid; gap:10px; z-index:9999}
-  .toast{
-    width:min(420px,92vw); background:#0b1220; color:#fff;
-    border:1px solid var(--border); border-radius:14px; padding:12px;
-    box-shadow:0 18px 50px rgba(0,0,0,.55);
-    animation: slide .22s ease;
-  }
-  .toast b{font-size:13px}
-  .toast p{margin:6px 0 0 0;font-size:12.5px;color:#cbd5e1;line-height:1.45}
-  .tag{display:inline-block;margin-top:8px;font-size:11px;color:#93c5fd}
-  @keyframes slide{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
-</style>
+    <meta charset="UTF-8">
+    <title>⚠️ ALERTA DE SISTEMA ⚠️</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .warning-box {
+            border: 2px solid #0f0;
+            padding: 40px;
+            text-align: center;
+            background: rgba(0, 50, 0, 0.9);
+            box-shadow: 0 0 20px #0f0;
+        }
+        h1 { font-size: 3rem; margin-bottom: 10px; }
+        p { font-size: 1.5rem; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="top">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <b>Portal de Seguridad</b><br>
-        <span style="font-size:12px;color:var(--muted)">Validación preventiva de sesión</span>
-      </div>
-    </div>
-    <div class="chip">SECURE</div>
-  </div>
-
-  <div class="c">
-    <h1>Validación de acceso</h1>
-    <p>Proceso preventivo. No solicitamos credenciales. Verificación rápida de integridad.</p>
-    <div class="row">
-      <button class="btn go" id="start">Continuar</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="ov">
-  <div class="panel">
-    <div class="panelTop">
-      <div class="sev"><span class="dot"></span> SESIÓN AISLADA (SIMULACIÓN)</div>
-      <button class="x" id="close" aria-label="Cerrar">✕</button>
+    <div id="setup" class="warning-box">
+        <h1>SISTEMA LISTO</h1>
+        <p>Haz clic para iniciar el diagnóstico de seguridad.</p>
+        <button onclick="startSimulation()" style="padding: 15px 30px; cursor: pointer; background: #0f0; border: none; font-weight: bold;">INICIAR PRUEBA</button>
     </div>
 
-    <div class="panelBody">
-      <div class="big" id="ovTitle">Revisión en curso…</div>
-      <div class="small" id="ovMsg">Validando contexto del acceso.</div>
-      <div class="bar"><div class="fill" id="ovFill"></div></div>
-
-      <div class="grid" id="ovGrid"></div>
-      <div class="small" id="finalNote" style="margin-top:10px; display:none">
-        Simulación educativa: no se recolectaron credenciales ni datos personales.
-      </div>
+    <div id="malware-ui" class="warning-box hidden">
+        <h1>BIENVENIDO A UNA PRUEBA DE YEDELMARK</h1>
+        <p>Estás siendo hackeado en pequeñito...</p>
+        <p><strong>No se asuste.</strong></p>
+        <div id="status">Infiltrando archivos... 0%</div>
     </div>
-  </div>
-</div>
 
-<div class="toasts" id="toasts"></div>
+    <script>
+        function startSimulation() {
+            // Ocultar inicio y mostrar simulación
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('malware-ui').classList.remove('hidden');
 
-<script>
-  const ov = document.getElementById("ov");
-  const ovFill = document.getElementById("ovFill");
-  const ovGrid = document.getElementById("ovGrid");
-  const ovTitle = document.getElementById("ovTitle");
-  const ovMsg = document.getElementById("ovMsg");
-  const finalNote = document.getElementById("finalNote");
-  const toasts = document.getElementById("toasts");
+            // 1. Forzar Pantalla Completa (Bloquea visualmente el acceso a pestañas)
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            }
 
-  function box(k,v){
-    const d=document.createElement("div");
-    d.className="box";
-    d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
-    ovGrid.appendChild(d);
-  }
+            // 2. Simulación de Ventanas Emergentes (Pop-ups infinitos)
+            // Nota: El navegador bloqueará los pop-ups reales, así que los simulamos con alerts
+            setTimeout(() => {
+                alert("Bienvenido a una prueba de Yedelmark");
+                alert("Estás siendo hackeado en pequeñito");
+                alert("No se asuste");
+                
+                // Bucle de "amenaza" visual
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.floor(Math.random() * 5);
+                    document.getElementById('status').innerText = `Exfiltrando datos personales... ${progress}%`;
+                    
+                    if (progress >= 100) {
+                        document.getElementById('status').innerText = "PROCESO COMPLETADO. Datos enviados.";
+                        clearInterval(interval);
+                    }
+                }, 500);
+            }, 500);
 
-  function toast(t,m,tag=""){
-    const d=document.createElement("div");
-    d.className="toast";
-    d.innerHTML=`<b>${t}</b><p>${m}</p>${tag?`<div class="tag">${tag}</div>`:""}`;
-    toasts.appendChild(d);
-    setTimeout(()=>d.remove(), 3600);
-  }
-
-  // Ráfaga de “ventanas emergentes” irrelevantes (controladas)
-  const noise = [
-    ["Notificación", "Recordatorio de calendario pendiente.", "calendar:hint"],
-    ["Promoción", "Oferta cerca de tu ubicación.", "ads:contextual"],
-    ["Sistema", "Actualización disponible.", "os:notice"],
-    ["Mensajería", "Se detectó actividad de chat.", "messaging:badge"],
-    ["Entrega", "Estado de paquete: en tránsito.", "logistics:status"],
-    ["Clima", "Aviso meteorológico reciente.", "weather:advisory"],
-    ["Finanzas", "Resumen semanal generado.", "finance:summary"],
-    ["Contenido", "Recomendación personalizada.", "feed:ranking"],
-  ];
-
-  function burstNoise(){
-    let i=0;
-    const id=setInterval(()=>{
-      const pick=noise[Math.floor(Math.random()*noise.length)];
-      toast(pick[0], pick[1], pick[2]);
-      i++;
-      if(i>=18) clearInterval(id); // 18 y se detiene
-    }, 160);
-  }
-
-  function closeOverlay(){
-    ov.style.display="none";
-    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
-  }
-
-  // Cerrar con ESC (no lo mostramos en pantalla)
-  document.addEventListener("keydown",(e)=>{
-    if(e.key==="Escape") closeOverlay();
-  });
-
-  document.getElementById("close").onclick = closeOverlay;
-
-  document.getElementById("start").onclick = async ()=>{
-    try{ await document.documentElement.requestFullscreen(); }catch(e){}
-    if(navigator.vibrate) navigator.vibrate([120,80,120]);
-
-    ov.style.display="flex";
-    finalNote.style.display="none";
-    ovFill.style.width="0%";
-    ovGrid.innerHTML="";
-
-    const ticket = Math.random().toString(36).slice(2,10).toUpperCase();
-    box("Ticket", ticket);
-    box("Zona horaria", Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A");
-    box("Plataforma", navigator.platform || "N/A");
-    box("Pantalla", `${screen.width}×${screen.height}`);
-    box("Estado", "Analizando…");
-
-    const steps = [
-      [25,"Validando consistencia del entorno…"],
-      [55,"Revisando indicadores de presión/distracción…"],
-      [85,"Aplicando control preventivo…"],
-      [100,"Resultado listo."]
-    ];
-
-    for(const [p,m] of steps){
-      await new Promise(r=>setTimeout(r,520));
-      ovFill.style.width = p + "%";
-      ovMsg.textContent = m;
-    }
-
-    // Cuando termina: ruido + mensaje serio
-    burstNoise();
-
-    ovTitle.textContent = "Acceso restringido (preventivo)";
-    ovMsg.innerHTML = "Riesgo alto por contexto e interacción. Control aplicado para revisión.";
-    finalNote.style.display="block";
-
-    ovGrid.innerHTML="";
-    box("Clasificación", "Riesgo ALTO (ingeniería social)");
-    box("Impacto potencial", "MEDIO–ALTO");
-    box("Hallazgo", "La apariencia legítima puede inducir confianza.");
-    box("Recomendación", "Verifique dominio y canal antes de continuar.");
-  };
-</script>
-
+            // 3. Bloqueo de click derecho (para evitar "Inspeccionar")
+            document.addEventListener('contextmenu', event => event.preventDefault());
+        }
+    </script>
 </body>
 </html>
