@@ -2,82 +2,105 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>⚠️ ALERTA DE SISTEMA ⚠️</title>
+    <title>TERMINAL - ACCESO REMOTO</title>
     <style>
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #0a0a0a;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
             margin: 0;
-            overflow: hidden;
+            height: 100vh;
+            display: flex;
             flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
-        .warning-box {
-            border: 2px solid #0f0;
-            padding: 40px;
-            text-align: center;
-            background: rgba(0, 50, 0, 0.9);
-            box-shadow: 0 0 20px #0f0;
+        #console {
+            border: 1px solid #33ff33;
+            padding: 20px;
+            background: rgba(0, 20, 0, 0.8);
+            height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
         }
-        h1 { font-size: 3rem; margin-bottom: 10px; }
-        p { font-size: 1.5rem; }
+        .line { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.3s forwards; }
+        .cmd { color: #fff; font-weight: bold; }
+        .danger { color: #ff3333; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        button {
+            background: #33ff33; color: #000; border: none;
+            padding: 15px 30px; font-weight: bold; cursor: pointer;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="setup" class="warning-box">
-        <h1>SISTEMA LISTO</h1>
-        <p>Haz clic para iniciar el diagnóstico de seguridad.</p>
-        <button onclick="startSimulation()" style="padding: 15px 30px; cursor: pointer; background: #0f0; border: none; font-weight: bold;">INICIAR PRUEBA</button>
-    </div>
+    <button id="btn" onclick="ejecutarExploit()">CONECTAR A HOST</button>
 
-    <div id="malware-ui" class="warning-box hidden">
-        <h1>BIENVENIDO A UNA PRUEBA DE YEDELMARK</h1>
-        <p>Estás siendo hackeado en pequeñito...</p>
-        <p><strong>No se asuste.</strong></p>
-        <div id="status">Infiltrando archivos... 0%</div>
+    <div id="console" class="hidden">
+        <div id="output"></div>
     </div>
 
     <script>
-        function startSimulation() {
-            // Ocultar inicio y mostrar simulación
-            document.getElementById('setup').classList.add('hidden');
-            document.getElementById('malware-ui').classList.remove('hidden');
+        async function obtenerIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch { return "127.0.0.1"; }
+        }
 
-            // 1. Forzar Pantalla Completa (Bloquea visualmente el acceso a pestañas)
-            let elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            }
+        async function ejecutarExploit() {
+            document.getElementById('btn').classList.add('hidden');
+            document.getElementById('console').classList.remove('hidden');
+            
+            const out = document.getElementById('output');
+            const addLine = (text, type = '') => {
+                const div = document.createElement('div');
+                div.className = `line ${type}`;
+                div.innerHTML = `<span class="cmd">></span> ${text}`;
+                out.appendChild(div);
+                out.scrollTop = out.scrollHeight;
+            };
 
-            // 2. Simulación de Ventanas Emergentes (Pop-ups infinitos)
-            // Nota: El navegador bloqueará los pop-ups reales, así que los simulamos con alerts
+            // Inicia secuencia
+            addLine("ESTABLECIENDO CONEXIÓN SSH...");
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // Extracción de Datos Reales
+            const ip = await obtenerIP();
+            const ram = navigator.deviceMemory || "N/D";
+            const cpu = navigator.hardwareConcurrency || "N/D";
+            const os = navigator.platform;
+
+            addLine(`SISTEMA DETECTADO: ${os}`, "danger");
+            addLine(`IP PÚBLICA CAPTURADA: ${ip}`, "danger");
+            addLine(`NÚCLEOS DE PROCESADOR: ${cpu}`);
+            addLine(`MEMORIA RAM ESTIMADA: ${ram}GB`);
+            addLine(`RESOLUCIÓN DE MONITOR: ${screen.width}x${screen.height}`);
+            
+            // Lanzamiento de Pop-ups (Simulados con Alert para bloquear el hilo)
             setTimeout(() => {
-                alert("Bienvenido a una prueba de Yedelmark");
-                alert("Estás siendo hackeado en pequeñito");
-                alert("No se asuste");
+                alert("BIENVENIDO A UNA PRUEBA DE YEDELMARK");
+                alert("SISTEMA COMPROMETIDO: " + os);
+                alert("IP RASTREADA: " + ip);
+                alert("Estás siendo hackeado en pequeñito. No se asuste.");
                 
-                // Bucle de "amenaza" visual
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += Math.floor(Math.random() * 5);
-                    document.getElementById('status').innerText = `Exfiltrando datos personales... ${progress}%`;
-                    
-                    if (progress >= 100) {
-                        document.getElementById('status').innerText = "PROCESO COMPLETADO. Datos enviados.";
-                        clearInterval(interval);
-                    }
-                }, 500);
+                // Efecto de bucle de datos
+                setInterval(() => {
+                    addLine("EXTRAYENDO PAQUETES DE RED... " + Math.random().toString(36).substring(7), "danger");
+                }, 100);
             }, 500);
 
-            // 3. Bloqueo de click derecho (para evitar "Inspeccionar")
-            document.addEventListener('contextmenu', event => event.preventDefault());
+            // Forzar pantalla completa
+            document.documentElement.requestFullscreen();
         }
+
+        // Bloqueo de escape visual (No absoluto por seguridad del browser)
+        window.onbeforeunload = () => "La transferencia de datos se interrumpirá.";
     </script>
 </body>
 </html>
